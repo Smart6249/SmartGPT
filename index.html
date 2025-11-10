@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartGBT</title>
+<style>
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #111;
+    color: white;
+    display: flex;
+    height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 240px;
+    background-color: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #222;
+    padding: 10px;
+  }
+
+  .sidebar h2 {
+    color: #00ffaa;
+    font-size: 20px;
+    margin: 10px 0 20px;
+    text-align: center;
+  }
+
+  .chat-list {
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+
+  .chat-item {
+    background: #222;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .chat-item:hover {
+    background: #333;
+  }
+
+  .new-chat {
+    background: #00ffaa;
+    color: #000;
+    text-align: center;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+
+  /* Chat Area */
+  .chat-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #0b0f19;
+  }
+
+  .chat-messages {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  .message {
+    max-width: 75%;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    line-height: 1.4em;
+  }
+
+  .user-message {
+    background-color: #0077ff;
+    align-self: flex-end;
+  }
+
+  .bot-message {
+    background-color: #1e293b;
+    align-self: flex-start;
+  }
+
+  /* Input */
+  .input-area {
+    display: flex;
+    padding: 10px;
+    background-color: #0e1420;
+    border-top: 1px solid #222;
+  }
+
+  .input-area input {
+    flex-grow: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background: #222;
+    color: white;
+  }
+
+  .input-area button {
+    background: #00ffaa;
+    color: black;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+
+  .input-area button:hover {
+    background: #00c896;
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>🧠 SmartGBT</h2>
+  <div class="chat-list">
+    <div class="chat-item">Welcome Chat</div>
+  </div>
+  <div class="new-chat" onclick="newChat()">+ New Chat</div>
+</div>
+
+<div class="chat-area">
+  <div class="chat-messages" id="chatbox">
+    <div class="message bot-message">Hey there! I’m SmartGBT. Ask me about math, science, or famous people like IShowSpeed or Kai Cenat!</div>
+  </div>
+  <div class="input-area">
+    <input id="userInput" placeholder="Ask SmartGBT..." onkeydown="if(event.key==='Enter')sendMessage()">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script>
+const chatbox = document.getElementById("chatbox");
+
+function newChat() {
+  chatbox.innerHTML = '<div class="message bot-message">New chat started! What do you want to learn?</div>';
+}
+
+function addMessage(sender, text) {
+  const msg = document.createElement("div");
+  msg.className = "message " + (sender === "user" ? "user-message" : "bot-message");
+  msg.textContent = text;
+  chatbox.appendChild(msg);
+  chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+function sendMessage() {
+  const input = document.getElementById("userInput");
+  const text = input.value.trim();
+  if (!text) return;
+  addMessage("user", text);
+  input.value = "";
+  setTimeout(() => botReply(text), 500);
+}
+
+function botReply(text) {
+  const msg = text.toLowerCase();
+  let response = "";
+
+  // Math
+  if (/\d+(\s*[\+\-\*x\/]\s*)\d+/.test(msg)) {
+    try {
+      const expr = msg.replace(/x/g, "*");
+      const result = eval(expr);
+      response = `🧮 ${text} = ${result}`;
+    } catch {
+      response = "Hmm, I couldn’t calculate that.";
+    }
+  }
+
+  // Famous people
+  else if (msg.includes("ishowspeed")) response = "IShowSpeed (Darren Watkins Jr.) is a YouTuber and streamer known for his energetic personality and funny reactions. He’s about 5'9\" (1.75 m) tall.";
+  else if (msg.includes("kai cenat")) response = "Kai Cenat is an American Twitch streamer and YouTuber famous for his comedy and reactions. He’s around 5'6\" (1.68 m) tall.";
+  else if (msg.includes("mrbeast")) response = "MrBeast (Jimmy Donaldson) is a YouTuber known for philanthropy and big challenges. He’s around 6'3\" (1.91 m) tall.";
+  else if (msg.includes("lebron")) response = "LeBron James is one of the greatest basketball players of all time. He’s 6'9\" (2.06 m) tall.";
+  else if (msg.includes("elon musk")) response = "Elon Musk is a tech entrepreneur and founder of Tesla and SpaceX. He’s 6'1\" (1.85 m) tall.";
+  else if (msg.includes("drake")) response = "Drake is a rapper, singer, and actor from Canada. He’s 6'0\" (1.83 m) tall.";
+
+  // Subjects
+  else if (msg.includes("math")) response = "🧮 Math covers arithmetic, algebra, geometry, and more. For example: 2x + 5 = 11 → x = 3.";
+  else if (msg.includes("science")) response = "⚗️ Science includes biology, chemistry, and physics — the study of life, matter, and energy!";
+  else if (msg.includes("history")) response = "📜 History teaches about past events like WWI, WWII, and the Cold War.";
+  else if (msg.includes("language")) response = "📚 Language arts help you write, read, and communicate clearly — grammar and essays included!";
+  else if (msg.includes("social studies")) response = "🌎 Social Studies covers geography, civics, economics, and history of people and cultures.";
+  else response = "I’m not sure yet — but I can learn! Try asking me about math, science, or someone famous.";
+
+  addMessage("bot", response);
+}
+</script>
+
+</body>
+</html>
